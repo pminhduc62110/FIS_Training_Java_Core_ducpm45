@@ -1,23 +1,17 @@
 package repo.dao.jdbc;
 
-import core.CriminalCase;
-import core.Detective;
-import core.enums.CaseStatus;
-import core.enums.CaseType;
-import core.enums.EmploymentStatus;
-import core.enums.Rank;
+import core.*;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class CriminalCaseDAOJDBCTest {
 
     @Test
     void create() throws SQLException {
         Detective d1 = new Detective.Builder()
-                .setId(1)
+                .setId(2)
                 .setUserName("detective1")
                 .setFirstName("Pham")
                 .setLastName("Minh Duc")
@@ -27,16 +21,16 @@ class CriminalCaseDAOJDBCTest {
                 .setStatus(EmploymentStatus.ACTIVE)
                 .build();
         CriminalCase c1 = new CriminalCase.Builder()
-                .setId(2)
-                .setNumber("HS1")
+                .setId(3)
+                .setNumber("HS2")
                 .setType(CaseType.FELONY)
-                .setStatus(CaseStatus.DISMISSED)
+                .setStatus(CaseStatus.IN_COURT)
                 .setNotes("ABC")
                 .setLeadInvestigator(d1)
                 .build();
 
         CriminalCaseDAOJDBC dao = new CriminalCaseDAOJDBC();
-dao.create(c1);
+        dao.create(c1);
     }
 
     @Test
