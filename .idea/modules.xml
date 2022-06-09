@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/FIS_Training_Java_Core_ducpm45.iml" filepath="$PROJECT_DIR$/.idea/FIS_Training_Java_Core_ducpm45.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sprint_1.iml" filepath="$PROJECT_DIR$/Sprint_1.iml" />
       <module fileurl="file://$PROJECT_DIR$/Sprint_1/src/main/main.iml" filepath="$PROJECT_DIR$/Sprint_1/src/main/main.iml" />
       <module fileurl="file://$PROJECT_DIR$/Sprint_1/src/test/test.iml" filepath="$PROJECT_DIR$/Sprint_1/src/test/test.iml" />
     </modules>
