@@ -34,5 +34,6 @@ class DataSourceTest {
         } catch (SQLException e) {
             log.error(e.toString());
         }
+        System.out.println("Phạm Minh Đức");
     }
 }

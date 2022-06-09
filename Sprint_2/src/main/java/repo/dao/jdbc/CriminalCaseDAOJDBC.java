@@ -1,6 +1,9 @@
 package repo.dao.jdbc;
 
+import core.CaseStatus;
+import core.CaseType;
 import core.CriminalCase;
+import core.Detective;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import repo.connectpool.DataSource;
@@ -9,7 +12,10 @@ import repo.dao.ICriminalCaseDAO;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
     private static final Logger log = LoggerFactory.getLogger(CriminalCaseDAOJDBC.class);
@@ -48,7 +54,32 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
         }
         return Optional.empty();
     }
-
+    @Override
+    public CriminalCase findByNumber(String number) {
+        String query = "select * from criminal_case_list where number = ?;";
+        CriminalCase.Builder criminalCase = new CriminalCase.Builder();
+        CaseDetectiveDAOJDBC cddj = new CaseDetectiveDAOJDBC();
+        try(Connection con = DataSource.getConnection()) {
+            assert con != null;
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, number);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                criminalCase.setId(rs.getLong(1));
+                criminalCase.setCreatedAt(stringToLocalDateTime(rs.getString(2)));
+                criminalCase.setModifiedAt(stringToLocalDateTime(rs.getString(3)));
+                criminalCase.setNumber(rs.getString(4));
+                criminalCase.setType(CaseType.valueOf(rs.getString(5)));
+                criminalCase.setShortDescription(rs.getString(6));
+                criminalCase.setStatus(CaseStatus.valueOf(rs.getString(7)));
+                criminalCase.setNotes(rs.getString(8));
+                criminalCase.setAssigned(cddj.findDetectiveByCaseNumber(number));
+            }
+        } catch (SQLException e) {
+            log.error(e.toString());
+        }
+        return criminalCase.build();
+    }
     @Override
     public void update(CriminalCase item) {
 
@@ -56,12 +87,6 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
 
     @Override
     public void delete(CriminalCase item) {
-
-    }
-
-    private String localDateTimeToString(LocalDateTime dateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return dateTime.format(formatter);
 
     }
 }
