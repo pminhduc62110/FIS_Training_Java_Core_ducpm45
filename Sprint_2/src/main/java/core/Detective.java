@@ -1,5 +1,8 @@
 package core;
 
+import core.enums.EmploymentStatus;
+import core.enums.Rank;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -111,6 +114,8 @@ public class Detective {
     }
 
     private Detective(Builder builder) {
+        id = builder.id;
+        modifiedAt = builder.modifiedAt;
         userName = builder.userName;
         firstName = builder.firstName;
         lastName = builder.lastName;
@@ -210,7 +215,7 @@ public class Detective {
      *
      * @return armed
      */
-    public boolean isArmed() {
+    public boolean getArmed() {
         return armed;
     }
 

@@ -1,5 +1,6 @@
 package repo.dao.jdbc;
 
+import core.Detective;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,10 +21,12 @@ class CaseDetectiveDAOJDBCTest {
     private static final Logger log = LoggerFactory.getLogger(CriminalCaseDAOJDBC.class);
     @Test
     void findDetectiveByCaseNumber() {
-        String case_number = "HS2";
+        String case_number = "HS1";
         CaseDetectiveDAOJDBC cdj = new CaseDetectiveDAOJDBC();
 
-        Assertions.assertEquals(3, cdj.findDetectiveByCaseNumber(case_number));
+        Set<Detective> set = cdj.findDetectiveByCaseNumber(case_number);
+        Assertions.assertEquals(2, set.size());
+        set.forEach(System.out::println);
     }
 
     @Test

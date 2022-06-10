@@ -1,9 +1,9 @@
 package repo.dao.jdbc;
 
-import core.CaseStatus;
-import core.CaseType;
 import core.CriminalCase;
 import core.Detective;
+import core.enums.CaseStatus;
+import core.enums.CaseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import repo.connectpool.DataSource;
@@ -11,11 +11,9 @@ import repo.dao.ICriminalCaseDAO;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
     private static final Logger log = LoggerFactory.getLogger(CriminalCaseDAOJDBC.class);
@@ -35,34 +33,52 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
             ps.setString(7, String.valueOf(criminalCase.getStatus()));
             ps.setString(8, criminalCase.getNotes());
             ps.setString(9, criminalCase.getLeadInvestigator().getBadgeNumber());
-            ps.executeUpdate();
+            if(ps.executeUpdate() > 0) {
+                log.info("Them moi "+ criminalCase.getNumber() + " thanh cong");
+            } else{
+                log.error("Them moi " + criminalCase.getNumber() + " khong thanh cong");
+            }
         } catch (SQLException e) {
             log.error(e.toString());
         }
     }
 
     @Override
-    public Optional<CriminalCase> getAll() {
+    public Optional<List<CriminalCase>> getAll() {
         String query = "select * from criminal_case_list;";
+        List<CriminalCase> criminalCaseList = new ArrayList<>();
         try(Connection con = DataSource.getConnection()) {
             assert con != null;
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-
+            DetectiveDAOJDBC ddj = new DetectiveDAOJDBC();
+            while(rs.next()) {
+                CriminalCase.Builder criminalCase = new CriminalCase.Builder()
+                        .setId(rs.getLong(1))
+                        .setCreatedAt(stringToLocalDateTime(rs.getString(2)))
+                        .setModifiedAt(stringToLocalDateTime(rs.getString(3)))
+                        .setNumber(rs.getString(4))
+                        .setType(CaseType.valueOf(rs.getString(5)))
+                        .setShortDescription(rs.getString(6))
+                        .setStatus(CaseStatus.valueOf(rs.getString(7)))
+                        .setNotes(rs.getString(8));
+                Detective detectiveLead = ddj.findByBadgeNumber(rs.getString(9));
+                criminalCase.setLeadInvestigator(detectiveLead);
+                criminalCaseList.add(criminalCase.build());
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            log.error(e.toString());
         }
-        return Optional.empty();
+        return Optional.of(criminalCaseList);
     }
     @Override
-    public CriminalCase findByNumber(String number) {
+    public CriminalCase findByNumber(String case_number) {
         String query = "select * from criminal_case_list where number = ?;";
         CriminalCase.Builder criminalCase = new CriminalCase.Builder();
-        CaseDetectiveDAOJDBC cddj = new CaseDetectiveDAOJDBC();
         try(Connection con = DataSource.getConnection()) {
             assert con != null;
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, number);
+            ps.setString(1, case_number);
             ResultSet rs = ps.executeQuery();
             while(rs.next()) {
                 criminalCase.setId(rs.getLong(1));
@@ -73,7 +89,6 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
                 criminalCase.setShortDescription(rs.getString(6));
                 criminalCase.setStatus(CaseStatus.valueOf(rs.getString(7)));
                 criminalCase.setNotes(rs.getString(8));
-                criminalCase.setAssigned(cddj.findDetectiveByCaseNumber(number));
             }
         } catch (SQLException e) {
             log.error(e.toString());
@@ -82,11 +97,69 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
     }
     @Override
     public void update(CriminalCase item) {
-
+        if(findByNumber(item.getNumber()) == null) {
+            log.info("Khong the update, khong ton tai ho so nay trong he thong");
+        }
+        String query = "update criminal_case_list\n" +
+                "set\n" +
+                "    id = ?,\n" +
+                "    modified_date = ?,\n" +
+                "    case_type = ?,\n" +
+                "    description = ?,\n" +
+                "    status = ?,\n" +
+                "    notes = ?,\n" +
+                "    lead_investigator = ?\n" +
+                "where number = ?";
+        try(Connection con = DataSource.getConnection()) {
+            assert con != null;
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setLong(1, item.getId());
+            ps.setString(2, localDateTimeToString(LocalDateTime.now()));
+            ps.setString(3, String.valueOf(item.getType()));
+            ps.setString(4, item.getShortDescription());
+            ps.setString(5, String.valueOf(item.getStatus()));
+            ps.setString(6, item.getNotes());
+            ps.setString(7, item.getLeadInvestigator().getBadgeNumber());
+            ps.setString(8, item.getNumber());
+            if(ps.executeUpdate() > 0) {
+                log.info("Update thanh cong");
+            } else {
+                log.error("Update that bai");
+            }
+        } catch (SQLException e) {
+            log.error(e.toString());
+        }
     }
 
     @Override
-    public void delete(CriminalCase item) {
+    public void delete(CriminalCase criminalCase) {
+        if(findByNumber(criminalCase.getNumber()) == null) {
+            log.info("Khong ton tai ho so nay trong he thong");
+        }
+        String query = "delete from criminal_case_list where number = ?;";
+        try(Connection con = DataSource.getConnection()) {
+            assert con != null;
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, criminalCase.getNumber());
 
+            if(ps.executeUpdate() < 0) {
+                log.error("Xoa " + criminalCase.getNumber() + " khong thanh cong!");
+            } else {
+                log.info("Xoa " + criminalCase.getNumber() + " thanh cong!");
+            }
+        } catch (SQLException e) {
+            log.error(e.toString());
+        }
+    }
+
+    public void deleteAll() {
+        String query = "delete from criminal_case_list;";
+        try(Connection con = DataSource.getConnection()) {
+            assert con != null;
+            Statement st = con.createStatement();
+            st.executeUpdate(query);
+        } catch (SQLException e) {
+            log.error(e.toString());
+        }
     }
 }

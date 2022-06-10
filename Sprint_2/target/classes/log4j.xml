@@ -11,7 +11,7 @@
     <!-- File appender -->
     <appender name="fout" class="org.apache.log4j.FileAppender">
         <param name="file" value="log4j/target/sprint2-log4j.log"/>
-        <param name="append" value="false"/>
+        <param name="append" value="true"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n"/>
         </layout>

@@ -21,9 +21,9 @@ public class CaseDetectiveDAOJDBC {
         DetectiveDAOJDBC ddj = new DetectiveDAOJDBC();
         Set<Detective> detectiveSet = new HashSet<>();
         List<String> badgeNumberList = getListDetective(case_number);
-        badgeNumberList.forEach(d-> {
+        for (String d : badgeNumberList) {
             detectiveSet.add(ddj.findByBadgeNumber(d));
-        });
+        }
         return detectiveSet;
     }
     public List<String> getListDetective(String case_number) {

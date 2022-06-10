@@ -15,9 +15,10 @@ public interface IDao<T> {
 
     /**
      * lay ra toan bo phan tu trong db
+     *
      * @return
      */
-    Optional<T> getAll();
+    Optional<List<T>> getAll();
 
     /**
      * cap nhat 1 phan tu trong db
