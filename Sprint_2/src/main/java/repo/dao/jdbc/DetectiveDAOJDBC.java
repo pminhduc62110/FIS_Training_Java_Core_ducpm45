@@ -1,9 +1,6 @@
 package repo.dao.jdbc;
 
-import core.CriminalCase;
 import core.Detective;
-import core.enums.CaseStatus;
-import core.enums.CaseType;
 import core.enums.EmploymentStatus;
 import core.enums.Rank;
 import org.slf4j.Logger;

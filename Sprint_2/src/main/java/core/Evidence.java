@@ -1,10 +1,11 @@
 package core;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 public class Evidence {
-    private long id;
+    private int id;
     private int version;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -20,7 +21,8 @@ public class Evidence {
      * Builder class
      */
     public static class Builder{
-        private long id = 1L;
+        private int id = 1;
+        private int version = 1;
         private LocalDateTime createdAt = LocalDateTime.now();
         private LocalDateTime modifiedAt = LocalDateTime.now();
         private CriminalCase criminalCase = null;
@@ -31,8 +33,13 @@ public class Evidence {
         private boolean archived;
         private Set<TrackEntry> trackEntrySet = null;
 
-        public Builder setId(long id) {
+        public Builder setId(int id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder setVersion(int version) {
+            this.version = version;
             return this;
         }
 
@@ -102,85 +109,43 @@ public class Evidence {
         trackEntrySet = builder.trackEntrySet;
     }
 
-    /**
-     * get id value
-     * @return evidence id
-     */
-
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    /**
-     * get evidence creation date
-     * @return date
-     */
+    public int getVersion() {
+        return version;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    /**
-     * get evidence modify date
-     * @return date
-     */
 
-    public LocalDateTime getModifiedAt() {
-        return modifiedAt;
-    }
-
-    /**
-     * get the case to which this evidence relates
-     * @return criminal case
-     */
     public CriminalCase getCriminalCase() {
         return criminalCase;
     }
 
-    /**
-     * get the storage in which this evidence is saving
-     * @return storage
-     */
     public Storage getStorage() {
         return storage;
     }
 
-    /**
-     * get evidence number
-     * @return evidence number
-     */
     public String getNumber() {
         return number;
     }
 
-    /**
-     * get item name
-     * @return item name
-     */
     public String getItemName() {
         return itemName;
     }
 
-    /**
-     * get evidence notes
-     * @return evidence notes
-     */
     public String getNotes() {
         return notes;
     }
 
-    /**
-     * get storage status
-     * @return true -> if this evidence has been stored, false -> if this evidence not yet archived
-     */
-    public boolean isArchived() {
+    public boolean getArchived() {
         return archived;
     }
 
-    /**
-     * get track entry
-     * @return HashSet<TrackEntry>
-     */
     public Set<TrackEntry> getTrackEntrySet() {
         return trackEntrySet;
     }
@@ -200,5 +165,28 @@ public class Evidence {
                 ", archived=" + archived +
                 ", trackEntrySet=" + trackEntrySet +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Evidence evidence = (Evidence) o;
+        return id == evidence.id
+                && version == evidence.version
+                && archived == evidence.archived
+                && Objects.equals(createdAt, evidence.createdAt)
+                && Objects.equals(modifiedAt, evidence.modifiedAt)
+                && Objects.equals(criminalCase, evidence.criminalCase)
+                && Objects.equals(storage, evidence.storage)
+                && Objects.equals(number, evidence.number)
+                && Objects.equals(itemName, evidence.itemName)
+                && Objects.equals(notes, evidence.notes)
+                && Objects.equals(trackEntrySet, evidence.trackEntrySet);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, version, createdAt, modifiedAt, criminalCase, storage, number, itemName, notes, archived, trackEntrySet);
     }
 }

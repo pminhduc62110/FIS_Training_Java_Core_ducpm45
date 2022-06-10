@@ -1,6 +1,5 @@
 package repo.dao.jdbc;
 
-import core.CriminalCase;
 import core.Detective;
 import core.enums.EmploymentStatus;
 import core.enums.Rank;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-
 class DetectiveDAOJDBCTest {
     @BeforeEach
     void beforeEach() {

@@ -4,6 +4,7 @@ import core.enums.EmploymentStatus;
 import core.enums.Rank;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 public class Detective {
@@ -263,5 +264,30 @@ public class Detective {
                 ", criminalCases=" + criminalCases +
                 ", trackEntries=" + trackEntries +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Detective detective = (Detective) o;
+        return armed == detective.armed
+                && Objects.equals(id, detective.id)
+                && Objects.equals(modifiedAt, detective.modifiedAt)
+                && Objects.equals(userName, detective.userName)
+                && Objects.equals(firstName, detective.firstName)
+                && Objects.equals(lastName, detective.lastName)
+                && Objects.equals(password, detective.password)
+                && Objects.equals(hiringDate, detective.hiringDate)
+                && Objects.equals(badgeNumber, detective.badgeNumber)
+                && rank == detective.rank && status == detective.status
+                && Objects.equals(criminalCases, detective.criminalCases)
+                && Objects.equals(trackEntries, detective.trackEntries);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, modifiedAt, userName, firstName, lastName, password,
+                hiringDate, badgeNumber, rank, armed, status, criminalCases, trackEntries);
     }
 }
