@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Evidence {
-    private int id;
+    private long id;
     private int version;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -21,7 +21,7 @@ public class Evidence {
      * Builder class
      */
     public static class Builder{
-        private int id = 1;
+        private long id = 1;
         private int version = 1;
         private LocalDateTime createdAt = LocalDateTime.now();
         private LocalDateTime modifiedAt = LocalDateTime.now();
@@ -30,10 +30,10 @@ public class Evidence {
         private String number;
         private String itemName;
         private String notes;
-        private boolean archived;
+        private boolean archived = false;
         private Set<TrackEntry> trackEntrySet = null;
 
-        public Builder setId(int id) {
+        public Builder setId(long id) {
             this.id = id;
             return this;
         }
@@ -109,7 +109,7 @@ public class Evidence {
         trackEntrySet = builder.trackEntrySet;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

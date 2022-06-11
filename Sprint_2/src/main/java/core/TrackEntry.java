@@ -5,7 +5,7 @@ import core.enums.TrackAction;
 import java.time.LocalDateTime;
 
 public class TrackEntry {
-    private int id;
+    private long id;
     private int version;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -18,11 +18,11 @@ public class TrackEntry {
     public TrackEntry() {
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
