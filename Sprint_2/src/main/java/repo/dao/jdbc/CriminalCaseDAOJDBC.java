@@ -14,9 +14,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
     private static final Logger log = LoggerFactory.getLogger(CriminalCaseDAOJDBC.class);
+    private static final CaseDetectiveDAOJDBC cddj = new CaseDetectiveDAOJDBC();
+    private static final DetectiveDAOJDBC ddj = new DetectiveDAOJDBC();
     @Override
     public void create(CriminalCase criminalCase) throws SQLException {
         String query = "INSERT INTO sprint_2.criminal_case_list\n" +
@@ -33,6 +36,12 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
             ps.setString(7, String.valueOf(criminalCase.getStatus()));
             ps.setString(8, criminalCase.getNotes());
             ps.setString(9, criminalCase.getLeadInvestigator().getBadgeNumber());
+
+            // Them vao bang case_detective
+            Set<Detective> detectiveSet = criminalCase.getAssigned();
+            detectiveSet.forEach(d -> {
+                cddj.addCaseDetective(criminalCase.getNumber(), d.getBadgeNumber());
+            });
             if(ps.executeUpdate() > 0) {
                 log.info("Them moi "+ criminalCase.getNumber() + " thanh cong");
             } else{
@@ -51,8 +60,9 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
             assert con != null;
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            DetectiveDAOJDBC ddj = new DetectiveDAOJDBC();
+
             while(rs.next()) {
+                Set<Detective> detectiveSet = cddj.findSetDetectiveByCaseNumber(rs.getString(4));
                 CriminalCase.Builder criminalCase = new CriminalCase.Builder()
                         .setId(rs.getLong(1))
                         .setCreatedAt(stringToLocalDateTime(rs.getString(2)))
@@ -64,6 +74,7 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
                         .setNotes(rs.getString(8));
                 Detective detectiveLead = ddj.findByBadgeNumber(rs.getString(9));
                 criminalCase.setLeadInvestigator(detectiveLead);
+                criminalCase.setAssigned(detectiveSet);
                 criminalCaseList.add(criminalCase.build());
             }
         } catch (SQLException e) {
@@ -75,6 +86,7 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
     public CriminalCase findByNumber(String case_number) {
         String query = "select * from criminal_case_list where number = ?;";
         CriminalCase.Builder criminalCase = new CriminalCase.Builder();
+        Set<Detective> detectiveSet = cddj.findSetDetectiveByCaseNumber(case_number);
         try(Connection con = DataSource.getConnection()) {
             assert con != null;
             PreparedStatement ps = con.prepareStatement(query);
@@ -89,6 +101,9 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
                 criminalCase.setShortDescription(rs.getString(6));
                 criminalCase.setStatus(CaseStatus.valueOf(rs.getString(7)));
                 criminalCase.setNotes(rs.getString(8));
+                Detective detectiveLead = ddj.findByBadgeNumber(rs.getString(9));
+                criminalCase.setLeadInvestigator(detectiveLead);
+                criminalCase.setAssigned(detectiveSet);
             }
         } catch (SQLException e) {
             log.error(e.toString());
@@ -96,8 +111,8 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
         return criminalCase.build();
     }
     @Override
-    public void update(CriminalCase item) {
-        if(findByNumber(item.getNumber()) == null) {
+    public void update(CriminalCase criminalCase) {
+        if(findByNumber(criminalCase.getNumber()) == null) {
             log.info("Khong the update, khong ton tai ho so nay trong he thong");
         }
         String query = "update criminal_case_list\n" +
@@ -113,14 +128,23 @@ public class CriminalCaseDAOJDBC implements ICriminalCaseDAO {
         try(Connection con = DataSource.getConnection()) {
             assert con != null;
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setLong(1, item.getId());
+            ps.setLong(1, criminalCase.getId());
             ps.setString(2, localDateTimeToString(LocalDateTime.now()));
-            ps.setString(3, String.valueOf(item.getType()));
-            ps.setString(4, item.getShortDescription());
-            ps.setString(5, String.valueOf(item.getStatus()));
-            ps.setString(6, item.getNotes());
-            ps.setString(7, item.getLeadInvestigator().getBadgeNumber());
-            ps.setString(8, item.getNumber());
+            ps.setString(3, String.valueOf(criminalCase.getType()));
+            ps.setString(4, criminalCase.getShortDescription());
+            ps.setString(5, String.valueOf(criminalCase.getStatus()));
+            ps.setString(6, criminalCase.getNotes());
+            ps.setString(7, criminalCase.getLeadInvestigator().getBadgeNumber());
+            ps.setString(8, criminalCase.getNumber());
+
+            // update case_detective
+            List<String> badgeNumberList = cddj.getListBadgeNumberByCaseNumber(criminalCase.getNumber());
+            Set<Detective> detectiveSet = criminalCase.getAssigned();
+            detectiveSet.forEach(s -> {
+                if(!badgeNumberList.contains(s.getBadgeNumber())) {
+                    cddj.addCaseDetective(criminalCase.getNumber(), s.getBadgeNumber());
+                }
+            });
             if(ps.executeUpdate() > 0) {
                 log.info("Update thanh cong");
             } else {

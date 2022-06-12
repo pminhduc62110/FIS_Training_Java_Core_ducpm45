@@ -1,5 +1,6 @@
 package repo.dao.jdbc;
 
+import core.CriminalCase;
 import core.Detective;
 import core.enums.EmploymentStatus;
 import core.enums.Rank;
@@ -13,10 +14,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class DetectiveDAOJDBC implements IDetectiveDAO {
     private static final Logger log = LoggerFactory.getLogger(CriminalCaseDAOJDBC.class);
-
+    private static final CaseDetectiveDAOJDBC cddj = new CaseDetectiveDAOJDBC();
     @Override
     public void create(Detective detective) {
         String query = "INSERT INTO sprint_2.detective_list\n" +
@@ -35,6 +37,12 @@ public class DetectiveDAOJDBC implements IDetectiveDAO {
             ps.setString(9, String.valueOf(detective.getRank()));
             ps.setBoolean(10, detective.getArmed());
             ps.setString(11, String.valueOf(detective.getStatus()));
+
+            // Them vao case_detective
+            Set<CriminalCase> criminalCaseSet = detective.getCriminalCases();
+            criminalCaseSet.forEach(d -> {
+                cddj.addCaseDetective(d.getNumber(), detective.getBadgeNumber());
+            });
             if (ps.executeUpdate() > 0) {
                 log.info("Them moi " + detective.getBadgeNumber() + " thanh cong");
             } else {
@@ -54,6 +62,7 @@ public class DetectiveDAOJDBC implements IDetectiveDAO {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
+                Set<CriminalCase> criminalCaseSet = cddj.findSetCaseByBadgeNumber(rs.getString(8));
                 Detective detective = new Detective.Builder()
                         .setId(rs.getLong(1))
                         .setModifiedAt(stringToLocalDateTime(rs.getString(2)))
@@ -66,6 +75,7 @@ public class DetectiveDAOJDBC implements IDetectiveDAO {
                         .setRank(Rank.valueOf(rs.getString(9)))
                         .setArmed(rs.getBoolean(10))
                         .setStatus(EmploymentStatus.valueOf(rs.getString(11)))
+                        .setCriminalCases(criminalCaseSet)
                         .build();
                 detectiveList.add(detective);
             }
@@ -103,6 +113,15 @@ public class DetectiveDAOJDBC implements IDetectiveDAO {
             ps.setBoolean(7, detective.getArmed());
             ps.setString(8, String.valueOf(detective.getStatus()));
             ps.setString(9, detective.getBadgeNumber());
+
+            // update case_detective
+            List<String> caseNumberList = cddj.getListCaseNumberByBadgeNumber(detective.getBadgeNumber());
+            Set<CriminalCase> criminalCaseSet = detective.getCriminalCases();
+            criminalCaseSet.forEach(s -> {
+                if(!caseNumberList.contains(s.getNumber())) {
+                    cddj.addCaseDetective(s.getNumber(), detective.getBadgeNumber());
+                }
+            });
             if(ps.executeUpdate() > 0) {
                 log.info("Update thanh cong");
             } else {
@@ -137,6 +156,7 @@ public class DetectiveDAOJDBC implements IDetectiveDAO {
     public Detective findByBadgeNumber(String badgeNumber) {
         String query = "select * from detective_list where badge_number = ?;";
         Detective.Builder detective = new Detective.Builder();
+        Set<CriminalCase> criminalCaseSet = cddj.findSetCaseByBadgeNumber(badgeNumber);
         try(Connection con = DataSource.getConnection()) {
             assert con != null;
             PreparedStatement ps = con.prepareStatement(query);
@@ -154,6 +174,7 @@ public class DetectiveDAOJDBC implements IDetectiveDAO {
                 detective.setRank(Rank.valueOf(rs.getString(9)));
                 detective.setArmed(rs.getBoolean(10));
                 detective.setStatus(EmploymentStatus.valueOf(rs.getString(11)));
+                detective.setCriminalCases(criminalCaseSet);
             }
         } catch (SQLException e) {
             log.error(e.toString());
