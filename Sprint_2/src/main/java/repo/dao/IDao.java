@@ -18,7 +18,7 @@ public interface IDao<T> {
      *
      * @return
      */
-    Optional<List<T>> getAll();
+    Optional<List<T>> getAll() throws SQLException;
 
     /**
      * cap nhat 1 phan tu trong db

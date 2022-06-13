@@ -1,10 +1,13 @@
 package repo.dao.jdbc;
 
-import core.*;
+import core.CriminalCase;
+import core.Detective;
 import core.enums.CaseStatus;
 import core.enums.CaseType;
 import core.enums.EmploymentStatus;
 import core.enums.Rank;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Set;
+
 class CriminalCaseDAOJDBCTest {
     private static final Logger log = LoggerFactory.getLogger(CriminalCaseDAOJDBC.class);
     @BeforeEach
@@ -187,6 +190,7 @@ class CriminalCaseDAOJDBCTest {
     void getAll() {
         CriminalCaseDAOJDBC ccdj = new CriminalCaseDAOJDBC();
         Assertions.assertEquals(5, ccdj.getAll().get().size());
+        MatcherAssert.assertThat(5, CoreMatchers.is(CoreMatchers.equalTo(ccdj.getAll().get().size())));
     }
 
     @Test
