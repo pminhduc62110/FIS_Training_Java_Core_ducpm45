@@ -34,7 +34,18 @@ class CriminalCaseDAOJDBCTest {
     }
 
     @Test
+<<<<<<< Updated upstream
     void getAll() {
+=======
+    void getAll() throws SQLException {
+        CriminalCaseDAOJDBC ccdj = new CriminalCaseDAOJDBC();
+        try {
+            Assertions.assertEquals(5, ccdj.getAll().get().size());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        MatcherAssert.assertThat(5, CoreMatchers.is(CoreMatchers.equalTo(ccdj.getAll().get().size())));
+>>>>>>> Stashed changes
     }
 
     @Test
@@ -42,6 +53,20 @@ class CriminalCaseDAOJDBCTest {
     }
 
     @Test
+<<<<<<< Updated upstream
     void delete() {
+=======
+    void delete() throws SQLException {
+        CriminalCaseDAOJDBC ccdj = new CriminalCaseDAOJDBC();
+        CriminalCase c = ccdj.findByNumber("HS003");
+        ccdj.delete(c);
+        Assertions.assertEquals(4, ccdj.getAll().get().size());
+    }
+
+    @AfterEach
+    void afterEach() {
+        CriminalCaseDAOJDBC ccdj = new CriminalCaseDAOJDBC();
+        ccdj.deleteAll();
+>>>>>>> Stashed changes
     }
 }
