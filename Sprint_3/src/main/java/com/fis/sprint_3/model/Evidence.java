@@ -1,20 +1,27 @@
 package com.fis.sprint_3.model;
 
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
-
+@Entity
+@Table(name = "evidences")
 public class Evidence extends AbstracEntity {
+    @ManyToOne
+    @JoinColumn(name="case_id", nullable = false)
     private CriminalCase criminalCase;
+    @ManyToOne
+    @JoinColumn(name = "storage_id", nullable = false)
     private Storage storage;
+    @Column(name = "number", unique = true)
     private String number;
+    @Column(name = "item")
     private String itemName;
+    @Column(name = "notes")
     private String notes;
+    @Column(name = "archived")
     private boolean archived;
+    @OneToMany(mappedBy = "evidence")
     private Set<TrackEntry> trackEntrySet;
-
-    public Evidence() {
-        super();
-    }
 
     @Override
     public String toString() {

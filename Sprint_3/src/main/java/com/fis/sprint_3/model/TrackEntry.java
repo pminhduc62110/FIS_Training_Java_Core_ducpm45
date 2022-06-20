@@ -2,18 +2,28 @@ package com.fis.sprint_3.model;
 
 import com.fis.sprint_3.core.TrackAction;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
+@Entity
+@Table(name = "track_entries")
 public class TrackEntry extends AbstracEntity {
+    @Column
     private LocalDateTime date;
+    @ManyToOne
+    @JoinColumn(name = "evidence_id", nullable = false)
     private Evidence evidence;
+    @ManyToOne
+    @JoinColumn(name = "detective_id", nullable = false)
     private Detective detective;
+    @Enumerated(EnumType.STRING)
     private TrackAction trackAction;
+    @Column(name = "reason")
     private String reason;
 
     public TrackEntry() {
         super();
+        date = LocalDateTime.now();
     }
 
     @Override

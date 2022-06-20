@@ -1,21 +1,25 @@
 package com.fis.sprint_3.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
+@Entity
+@Table(name = "persons")
 public class Person extends AbstracEntity {
-
+    @Column(name = "user_name", unique = true)
     private String userName;
+    @Column(name = "first_name")
     private String firstName;
+    @Column(name = "last_name")
     private String lastName;
+    @Column(name = "password")
     private String password;
-    private LocalDateTime hiringDate;
 
-    public Person() {
-        super();
-        hiringDate = LocalDateTime.now();
-    }
+    @Column(name = "hiring_date")
+    private LocalDateTime hiringDate = LocalDateTime.now();
 
     @Override
     public String toString() {

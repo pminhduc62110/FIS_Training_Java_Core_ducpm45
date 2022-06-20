@@ -1,16 +1,21 @@
 package com.fis.sprint_3.model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
+@MappedSuperclass
 public abstract class AbstracEntity {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
-    protected int version;
+    @Column(name = "version")
+    protected int version = 1;
+    @Column(name = "create_time")
     protected LocalDateTime createdAt;
+    @Column(name = "modify_time")
     protected LocalDateTime modifiedAt;
 
-    protected AbstracEntity() {
+    public AbstracEntity() {
         createdAt = LocalDateTime.now();
         modifiedAt = LocalDateTime.now();
     }

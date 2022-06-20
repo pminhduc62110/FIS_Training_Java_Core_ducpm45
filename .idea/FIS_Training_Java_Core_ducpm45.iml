@@ -8,8 +8,14 @@
       <excludeFolder url="file://$MODULE_DIR$/Topic02" />
       <excludeFolder url="file://$MODULE_DIR$/Ex_03_2_Mini_Exercises_1_2" />
       <excludeFolder url="file://$MODULE_DIR$/Ex_Collection_A_Son" />
+      <excludeFolder url="file://$MODULE_DIR$/fis-training-test-02-main" />
+      <excludeFolder url="file://$MODULE_DIR$/fis-training-06-2022-main" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.20" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.36" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-beans:5.3.20" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.data:spring-data-jpa:2.7.0" level="project" />
   </component>
 </module>

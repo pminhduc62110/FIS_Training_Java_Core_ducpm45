@@ -3,21 +3,30 @@ package com.fis.sprint_3.model;
 import com.fis.sprint_3.core.EmploymentStatus;
 import com.fis.sprint_3.core.Rank;
 
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
-
+@Entity
+@Table(name = "detectives")
 public class Detective extends AbstracEntity {
+    @OneToOne
+    @JoinColumn(name = "person_id")
     private Person person;
+    @Column(name = "badge_number", unique = true)
     private String badgeNumber;
+    @Column(name = "`rank`")
+    @Enumerated(EnumType.STRING)
     private Rank rank;
+    @Column(name = "armed")
     private boolean armed;
+    @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
+    @ManyToMany(mappedBy = "assigned")
+    @Transient
     private Set<CriminalCase> criminalCaseSet;
+    @OneToMany(mappedBy = "detective")
+    @Transient
     private Set<TrackEntry> trackEntrySet;
-
-    public Detective() {
-        super();
-    }
 
     @Override
     public String toString() {
@@ -73,7 +82,7 @@ public class Detective extends AbstracEntity {
         this.rank = rank;
     }
 
-    public boolean isArmed() {
+    public boolean getArmed() {
         return armed;
     }
 
@@ -104,4 +113,5 @@ public class Detective extends AbstracEntity {
     public void setTrackEntrySet(Set<TrackEntry> trackEntrySet) {
         this.trackEntrySet = trackEntrySet;
     }
+
 }

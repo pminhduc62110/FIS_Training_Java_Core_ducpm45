@@ -1,13 +1,14 @@
 package com.fis.sprint_3.repository;
 
 import com.fis.sprint_3.model.AbstracEntity;
+import com.fis.sprint_3.model.Detective;
 
-import java.util.Optional;
+import java.util.Set;
 
 public interface AbstractRepo<T extends AbstracEntity> {
     void create(T obj);
 
-    Optional<T> getALl();
+    Set<Detective> getALl();
 
     T findById(Long id);
 

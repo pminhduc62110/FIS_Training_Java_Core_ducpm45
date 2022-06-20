@@ -3,24 +3,36 @@ package com.fis.sprint_3.model;
 import com.fis.sprint_3.core.CaseStatus;
 import com.fis.sprint_3.core.CaseType;
 
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
-
+@Entity
+@Table(name = "criminal_case")
 public class CriminalCase extends AbstracEntity {
-
+    @Column(name = "number", unique = true)
     private String number;
+    @Column(name = "case_type")
+    @Enumerated(EnumType.STRING)
     private CaseType caseType;
+    @Column(name = "short_description")
     private String shortDescription;
+    @Column(name = "detail_description")
     private String detailedDescription;
+    @Column(name = "case_status")
+    @Enumerated(EnumType.STRING)
     private CaseStatus caseStatus;
+    @Column(name = "notes")
     private String notes;
+    @OneToMany(mappedBy = "criminalCase")
+    @Transient
     private Set<Evidence> evidenceSet;
+    @OneToOne
+    @JoinColumn(name="lead_detective_id", nullable = false)
     private Detective leadInvestigator;
+    @ManyToMany
+    @JoinTable(name = "case_detective")
+    @Transient
     private Set<Detective> assigned;
-
-    public CriminalCase() {
-        super();
-    }
 
     @Override
     public String toString() {

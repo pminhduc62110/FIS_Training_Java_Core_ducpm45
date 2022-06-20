@@ -1,17 +1,20 @@
 package com.fis.sprint_3.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Objects;
 import java.util.Set;
-
+@Entity
+@Table(name = "storages")
 public class Storage extends AbstracEntity {
+    @Column(name = "name")
     private String name;
+    @Column(name = "location")
     private String location;
+    @OneToMany(mappedBy = "storage")
     private Set<Evidence> evidenceSet;
-
-    public Storage() {
-        super();
-    }
-
     @Override
     public String toString() {
         return "Storage{" +
